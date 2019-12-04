@@ -1,0 +1,36 @@
+.todoModal {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    padding: 2rem;
+    margin: 0 auto;
+    width: 40vw;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    & .createInput {
+        width: 100%;
+        padding: 8px;
+        border: 0px;
+        border-bottom: 1px solid #000;
+    }
+
+    & .createDescription {
+        width: 100%;
+        padding: 8px;
+    }
+
+    & label {
+        margin-bottom: 1.5rem;
+    }
+
+    & .modalActions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+    }
+}
+

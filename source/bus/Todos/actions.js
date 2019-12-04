@@ -21,15 +21,34 @@ export const todosActions = {
       payload: id,
     };
   },
-  toggleModal: () => {
+  toggleModal: id => {
     return {
       type: types.TOGGLE_MODAL,
+      payload: id,
     };
   },
-  updateEditedTodo: (todo) => {
+  updateEditedTodo: todo => {
     return {
-      type:    types.UPDATE_EDITED_TODO,
+      type: types.UPDATE_EDITED_TODO,
       payload: todo,
+    };
+  },
+  editTodo: id => {
+    return {
+      type: types.EDIT_TODO,
+      payload: id,
+    };
+  },
+  fillTodo: todo => {
+    return {
+      type: types.FILL_TODO,
+      payload: todo,
+    };
+  },
+  updateTodo: id => {
+    return {
+      type: types.UPDATE_TODO,
+      payload: id,
     };
   },
 };

@@ -23,12 +23,6 @@ const mapDispatchToProps = dispatch => {
 
 @connect(null, mapDispatchToProps)
 export default class Todo extends PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.editTodo = this.editTodo.bind(this);
-  }
-
   deleteTodo = () => {
     const { id, actions } = this.props;
 
@@ -41,12 +35,12 @@ export default class Todo extends PureComponent {
     actions.doneTodo(id);
   };
 
-  editTodo() {
-    const { toggleModal, id, editTodo } = this.props;
+  editTodo = () => {
+    const { id, actions } = this.props;
 
-    toggleModal(id);
-    editTodo();
-  }
+    actions.toggleModal(id);
+    actions.editTodo();
+  };
 
   render() {
     const { title, description, priority, done } = this.props;

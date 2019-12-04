@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Spring } from 'react-spring';
-import { TodoProvider } from '../ThemeContext/ThemeContext';
+import {bindActionCreators} from 'redux';
 
 // Components
 import Todo from '../Todo';
@@ -11,13 +11,27 @@ import Modal from '../Modal';
 // Styles
 import Styles from './styles.m.css';
 
+import {todosActions} from '../../bus/Todos/actions';
+
 const mapStateToProps = state => {
   return {
     todos: state.todosReducer.todos,
+    isModalShown: state.todosReducer.isModalShown,
+    showSaveButton: state.todosReducer.showSaveButton,
+    currentTodoId: state.todosReducer.currentTodoId
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = dispatch => {
+  return {
+    actions: bindActionCreators(
+        {
+          ...todosActions,
+        },
+        dispatch,
+    ),
+  };
+};
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Todos extends Component {
@@ -63,7 +77,6 @@ export default class Todos extends Component {
       isModalShown: false,
     };
 
-    this.toggleModal = this.toggleModal.bind(this);
     this.handleOutsideClick = this.handleOutsideClick.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.createTodo = this.createTodo.bind(this);
@@ -104,19 +117,22 @@ export default class Todos extends Component {
     return todo.title.toLowerCase().includes(tasksFilter);
   };
 
-  toggleModal(id) {
-    const { isModalShown } = this.state;
+  toggleModal = () => {
+    const { isModalShown, actions } = this.props;
 
     if (!isModalShown) {
       document.addEventListener('click', this.handleOutsideClick, false);
     } else {
       document.removeEventListener('click', this.handleOutsideClick, false);
     }
-    this.setState(prevState => ({
-      isModalShown: !prevState.isModalShown,
-      currentTodoId: id,
-      showSaveButton: true,
-    }));
+
+    actions.toggleModal();
+
+    // this.setState(prevState => ({
+    //   isModalShown: !prevState.isModalShown,
+    //   currentTodoId: id,
+    //   showSaveButton: true,
+    // }));
   }
 
   handleOutsideClick(e) {
@@ -174,9 +190,9 @@ export default class Todos extends Component {
   }
 
   render() {
-    const { isModalShown, showSaveButton, tasksFilter, currentTodoId } = this.state;
+    const { tasksFilter } = this.state;
 
-    const { todos } = this.props;
+    const { todos, isModalShown, showSaveButton, currentTodoId } = this.props;
 
     const completed = (a, b) => (a > b) - (a < b);
 
@@ -200,11 +216,6 @@ export default class Todos extends Component {
       ));
 
     return (
-      <TodoProvider
-        value={{
-          todos,
-        }}
-      >
         <main>
           <div className="container">
             <section className={Styles.toolbar}>
@@ -280,7 +291,6 @@ export default class Todos extends Component {
             {isModalShown && <div className={Styles.modalWrapper} />}
           </div>
         </main>
-      </TodoProvider>
     );
   }
 }

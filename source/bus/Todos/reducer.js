@@ -47,7 +47,14 @@ export const todosReducer = (state = initialState, action) => {
     case types.CREATE_TODO:
       return {
         ...state,
-        todos: [action.todo, ...state.todos],
+        title: '',
+        description: '',
+        done: false,
+        priority: 'normal',
+        todos: [{
+          id: Date.now().toString(),
+          ...action.payload
+        }, ...state.todos],
       };
 
     case types.DELETE_TODO:
@@ -66,6 +73,20 @@ export const todosReducer = (state = initialState, action) => {
           }
           return t;
         }),
+      };
+
+    case types.TOGGLE_MODAL:
+      return {
+        ...state,
+        isModalShown: !state.isModalShown,
+        // currentTodoId: action.payload,
+        showSaveButton: true,
+      };
+
+    case types.UPDATE_EDITED_TODO:
+      return {
+        ...state,
+        ...action.payload
       };
 
     default:

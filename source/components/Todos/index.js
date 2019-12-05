@@ -12,6 +12,7 @@ import Modal from '../Modal';
 import Styles from './styles.m.css';
 
 import { todosActions } from '../../bus/Todos/actions';
+import { filtersActions } from '../../bus/Filters/actions';
 
 const mapStateToProps = state => {
   return {
@@ -19,6 +20,9 @@ const mapStateToProps = state => {
     isModalShown: state.todosReducer.isModalShown,
     showSaveButton: state.todosReducer.showSaveButton,
     currentTodoId: state.todosReducer.currentTodoId,
+    tasksFilter: state.filtersReducer.tasksFilter,
+    done: state.filtersReducer.done,
+    priority: state.filtersReducer.priority,
   };
 };
 
@@ -27,6 +31,7 @@ const mapDispatchToProps = dispatch => {
     actions: bindActionCreators(
       {
         ...todosActions,
+        ...filtersActions,
       },
       dispatch,
     ),
@@ -35,23 +40,26 @@ const mapDispatchToProps = dispatch => {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Todos extends Component {
-  constructor() {
-    super();
+  searchTasks = todo => {
+    const { tasksFilter } = this.props;
 
-    this.state = {
-      done: false,
-      priority: 'normal',
+    return todo.title.toLowerCase().includes(tasksFilter);
+  };
 
-      tasksFilter: '',
-    };
+  updateTasksFilter = event => {
+    const { actions } = this.props;
 
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.updateTasksFilter = this.updateTasksFilter.bind(this);
+    actions.updateTaskFilter(event.target.value.toLocaleLowerCase());
+  };
 
-  }
+  toggleModal = () => {
+    const { actions } = this.props;
+
+    actions.toggleModal(null);
+  };
 
   filterTasks = todo => {
-    const { done, priority } = this.state;
+    const { done, priority } = this.props;
 
     if (done && todo.priority === 'high') return todo.priority === priority && todo.done;
 
@@ -76,51 +84,30 @@ export default class Todos extends Component {
     }
   };
 
-  searchTasks = todo => {
-    const { tasksFilter } = this.state;
+  handleInputChange = event => {
+    const { actions, done } = this.props;
 
-    return todo.title.toLowerCase().includes(tasksFilter);
-  };
-
-  toggleModal = () => {
-    const { actions } = this.props;
-
-    actions.toggleModal(null);
-  };
-
-
-  updateTasksFilter(event) {
-    this.setState({
-      tasksFilter: event.target.value.toLocaleLowerCase(),
-    });
-  }
-
-  handleInputChange(event) {
     const { target } = event;
     const { value } = target;
     const { name } = target;
 
-    const { done } = this.state;
-
     if (name === 'priority') {
-      this.setState({
+      actions.updateSelectChange({
         [name]: value,
         priority: value,
       });
     }
 
     if (name === 'done') {
-      this.setState({
+      actions.updateSelectChange({
         [name]: value,
         done: !done,
       });
     }
-  }
+  };
 
   render() {
-    const { tasksFilter } = this.state;
-
-    const { todos, isModalShown, showSaveButton, currentTodoId } = this.props;
+    const { todos, isModalShown, showSaveButton, currentTodoId, tasksFilter } = this.props;
 
     const completed = (a, b) => (a > b) - (a < b);
 
@@ -202,13 +189,8 @@ export default class Todos extends Component {
             </Spring>
           </section>
         </div>
-          {isModalShown && (
-            <Modal
-              showSaveButton={showSaveButton}
-              currentTodoId={currentTodoId}
-            />
-          )}
-          {isModalShown && <div className={Styles.modalWrapper} />}
+        {isModalShown && <Modal showSaveButton={showSaveButton} currentTodoId={currentTodoId} />}
+        {isModalShown && <div className={Styles.modalWrapper} />}
       </main>
     );
   }

@@ -8,5 +8,4 @@ import { filtersReducer } from '../bus/Filters/reducer';
 export const rootReducer = combineReducers({
   filtersReducer,
   todosReducer,
-
 });

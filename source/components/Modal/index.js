@@ -33,7 +33,6 @@ const mapDispatchToProps = dispatch => {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Modal extends Component {
-
   componentDidMount() {
     const { showSaveButton } = this.props;
 

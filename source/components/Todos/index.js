@@ -12,6 +12,7 @@ import Modal from '../Modal';
 import Styles from './styles.m.css';
 
 import { todosActions } from '../../bus/Todos/actions';
+import { filtersActions } from '../../bus/Filters/actions';
 
 const mapStateToProps = state => {
   return {
@@ -19,6 +20,7 @@ const mapStateToProps = state => {
     isModalShown: state.todosReducer.isModalShown,
     showSaveButton: state.todosReducer.showSaveButton,
     currentTodoId: state.todosReducer.currentTodoId,
+    tasksFilter: state.filtersReducer.tasksFilter
   };
 };
 
@@ -27,6 +29,7 @@ const mapDispatchToProps = dispatch => {
     actions: bindActionCreators(
       {
         ...todosActions,
+        ...filtersActions
       },
       dispatch,
     ),
@@ -42,11 +45,9 @@ export default class Todos extends Component {
       done: false,
       priority: 'normal',
 
-      tasksFilter: '',
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.updateTasksFilter = this.updateTasksFilter.bind(this);
 
   }
 
@@ -77,10 +78,18 @@ export default class Todos extends Component {
   };
 
   searchTasks = todo => {
-    const { tasksFilter } = this.state;
+    const { tasksFilter } = this.props;
 
     return todo.title.toLowerCase().includes(tasksFilter);
   };
+
+  updateTasksFilter = (event) => {
+    const { actions } = this.props;
+
+    actions.updateTaskFilter(event.target.value.toLocaleLowerCase());
+
+  };
+
 
   toggleModal = () => {
     const { actions } = this.props;
@@ -88,12 +97,6 @@ export default class Todos extends Component {
     actions.toggleModal(null);
   };
 
-
-  updateTasksFilter(event) {
-    this.setState({
-      tasksFilter: event.target.value.toLocaleLowerCase(),
-    });
-  }
 
   handleInputChange(event) {
     const { target } = event;
@@ -118,9 +121,7 @@ export default class Todos extends Component {
   }
 
   render() {
-    const { tasksFilter } = this.state;
-
-    const { todos, isModalShown, showSaveButton, currentTodoId } = this.props;
+    const { todos, isModalShown, showSaveButton, currentTodoId, tasksFilter  } = this.props;
 
     const completed = (a, b) => (a > b) - (a < b);
 

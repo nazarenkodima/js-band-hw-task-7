@@ -36,7 +36,7 @@ const initialState = {
   done: false,
   priority: 'normal',
   currentTodoId: undefined,
-  tasksFilter: '',
+  // tasksFilter: '',
   showSaveButton: true,
   isModalShown: false,
 };

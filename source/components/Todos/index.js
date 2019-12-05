@@ -45,9 +45,9 @@ export default class Todos extends Component {
       tasksFilter: '',
     };
 
-    this.handleOutsideClick = this.handleOutsideClick.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.updateTasksFilter = this.updateTasksFilter.bind(this);
+
   }
 
   filterTasks = todo => {
@@ -82,25 +82,12 @@ export default class Todos extends Component {
     return todo.title.toLowerCase().includes(tasksFilter);
   };
 
-  toggleModal = id => {
-    const { isModalShown, actions } = this.props;
+  toggleModal = () => {
+    const { actions } = this.props;
 
-    if (!isModalShown) {
-      document.addEventListener('click', this.handleOutsideClick, false);
-    } else {
-      document.removeEventListener('click', this.handleOutsideClick, false);
-    }
-
-    actions.toggleModal(id);
+    actions.toggleModal(null);
   };
 
-  handleOutsideClick(e) {
-    if (this.node.contains(e.target)) {
-      return;
-    }
-
-    this.toggleModal();
-  }
 
   updateTasksFilter(event) {
     this.setState({
@@ -215,22 +202,13 @@ export default class Todos extends Component {
             </Spring>
           </section>
         </div>
-        <div
-          ref={node => {
-            this.node = node;
-          }}
-        >
           {isModalShown && (
             <Modal
-              // createTodo={this.createTodo}
-              updateTodo={this.updateTodo}
-              toggleModal={this.toggleModal}
               showSaveButton={showSaveButton}
               currentTodoId={currentTodoId}
             />
           )}
           {isModalShown && <div className={Styles.modalWrapper} />}
-        </div>
       </main>
     );
   }

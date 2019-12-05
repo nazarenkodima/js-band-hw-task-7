@@ -33,6 +33,7 @@ const mapDispatchToProps = dispatch => {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Modal extends Component {
+
   componentDidMount() {
     const { showSaveButton } = this.props;
 
@@ -42,7 +43,7 @@ export default class Modal extends Component {
   }
 
   createTodo = () => {
-    const { actions, toggleModal, title, description, priority, done } = this.props;
+    const { actions, title, description, priority, done } = this.props;
 
     if (!title.trim()) {
       return null;
@@ -55,7 +56,7 @@ export default class Modal extends Component {
       priority,
     });
 
-    toggleModal();
+    actions.toggleModal(null);
   };
 
   handleInputChange = event => {
@@ -78,12 +79,15 @@ export default class Modal extends Component {
     const { actions } = this.props;
 
     actions.updateTodo();
-    actions.toggleModal();
+
+    actions.toggleModal(null);
   };
 
   cancelTodo = () => {
     const { actions } = this.props;
-    actions.toggleModal();
+    actions.editCancel();
+
+    actions.toggleModal(null);
   };
 
   render() {

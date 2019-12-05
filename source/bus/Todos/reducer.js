@@ -101,6 +101,9 @@ export const todosReducer = (state = initialState, action) => {
         showSaveButton: false,
       };
 
+    case types.EDIT_CANCEL:
+      return state;
+
     case types.FILL_TODO:
       // eslint-disable-next-line no-case-declarations
       const { description, done, priority, title } = state.todos.find(
@@ -122,7 +125,7 @@ export const todosReducer = (state = initialState, action) => {
           if (todo.id === state.currentTodoId) {
             t.title = state.title;
             t.description = state.description;
-            t.done = state.todo;
+            t.done = state.done;
             t.priority = state.priority;
           }
           return t;

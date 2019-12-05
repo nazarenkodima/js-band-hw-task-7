@@ -33,10 +33,14 @@ export const todosActions = {
       payload: todo,
     };
   },
-  editTodo: id => {
+  editTodo: () => {
     return {
       type: types.EDIT_TODO,
-      payload: id,
+    };
+  },
+  editCancel: () => {
+    return {
+      type: types.EDIT_CANCEL,
     };
   },
   fillTodo: todo => {

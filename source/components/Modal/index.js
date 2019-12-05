@@ -1,111 +1,97 @@
 // Core
 import React, { Component } from 'react';
-import TodoContext from '../ThemeContext/ThemeContext';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 // Instruments
 import Styles from './styles.m.css';
 
+// actions
+import { todosActions } from '../../bus/Todos/actions';
+
+const mapStateToProps = state => {
+  return {
+    title: state.todosReducer.title,
+    description: state.todosReducer.description,
+    priority: state.todosReducer.priority,
+    done: state.todosReducer.done,
+    todos: state.todosReducer.todos,
+    currentTodoId: state.todosReducer.currentTodoId,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    actions: bindActionCreators(
+      {
+        ...todosActions,
+      },
+      dispatch,
+    ),
+  };
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
 export default class Modal extends Component {
-  // eslint-disable-next-line react/sort-comp,react/static-property-placement
-  static contextType = TodoContext;
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      title: '',
-      description: '',
-      priority: 'normal',
-      done: false,
-    };
-
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.createTodo = this.createTodo.bind(this);
-    this.cancelTodo = this.cancelTodo.bind(this);
-    this.updateTodo = this.updateTodo.bind(this);
-    this.fillTodo = this.fillTodo.bind(this);
-  }
 
   componentDidMount() {
-    this.fillTodo();
+    const { showSaveButton } = this.props;
+
+    if (!showSaveButton) {
+      this.fillTodo();
+    }
   }
 
-  fillTodo() {
-    const { todos } = this.context;
-    const { currentTodoId } = this.props;
-
-    todos.map(todo => {
-      const t = todo;
-      if (t.id === currentTodoId) {
-        this.setState({
-          title: t.title,
-          description: t.description,
-          priority: t.priority,
-          done: t.done,
-        });
-      }
-      return todo;
-    });
-  }
-
-  handleInputChange(event) {
-    const { target } = event;
-    const { value } = target;
-    const { name } = target;
-
-    this.setState({
-      [name]: value,
-    });
-  }
-
-  createTodo() {
-    const { createTodo, toggleModal } = this.props;
-    const { title, description, priority, done } = this.state;
+  createTodo = () => {
+    const { actions, title, description, priority, done } = this.props;
 
     if (!title.trim()) {
       return null;
     }
 
-    createTodo({
-      id: Date.now().toString(),
+    actions.createTodo({
       title,
       description,
       done,
       priority,
     });
 
-    toggleModal();
-  }
+    actions.toggleModal(null);
+  };
 
-  updateTodo() {
-    const { updateTodo, currentTodoId, toggleModal } = this.props;
-    const { title, description, priority } = this.state;
-    const { todos } = this.context;
+  handleInputChange = event => {
+    const { target } = event;
+    const { value } = target;
+    const { name } = target;
 
-    todos.map(todo => {
-      const t = todo;
-      if (todo.id === currentTodoId) {
-        t.title = title;
-        t.description = description;
-        t.priority = priority;
-      }
+    const { actions } = this.props;
 
-      return t;
-    });
+    actions.updateEditedTodo({ [name]: value });
+  };
 
-    updateTodo(todos);
+  fillTodo = () => {
+    const { currentTodoId, actions } = this.props;
 
-    toggleModal();
-  }
+    actions.fillTodo(currentTodoId);
+  };
 
-  cancelTodo() {
-    const { toggleModal } = this.props;
-    toggleModal();
-  }
+  updateTodo = () => {
+    const { actions } = this.props;
+
+    actions.updateTodo();
+
+    actions.toggleModal(null);
+  };
+
+  cancelTodo = () => {
+    const { actions } = this.props;
+    actions.editCancel();
+
+    actions.toggleModal(null);
+  };
 
   render() {
-    const { title, description, priority } = this.state;
-    const { showSaveButton } = this.props;
+    const { showSaveButton, title, description, priority } = this.props;
 
     return (
       <>
